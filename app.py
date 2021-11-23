@@ -51,7 +51,7 @@ def address():
       # os.system('git push -u origin main')
       # os.system('git config --global user.email "bakerson111@gmail.com"')
       # os.system('git config --global user.name "JongminKim"')
-      os.system('git commit -m "data update"')
+      os.system('git push')
     try:
       deathdata = pd.read_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
     except:
@@ -68,7 +68,7 @@ def address():
       # os.system('git push -u origin main')
       # os.system('git config --global user.email "bakerson111@gmail.com"')
       # os.system('git config --global user.name "JongminKim"')
-      os.system('git commit -m "data update"')
+      os.system('git push')
     value = pddata.confirmed[-1]
     death = list(deathdata[deathdata['gubun']==data.split()[0]]['deathCnt'])[0]
     return render_template('current_status.html',data=data,value=value,death=death,city=data.split()[0])
