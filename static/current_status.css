@@ -28,7 +28,8 @@ header {
 header .container {
     align-items: center;
 }
-.Covid_Confirm, .Covid_Death {
+
+span.Covid_Confirm, span.Covid_Death {
     font-size: 90%;
     font-family: Arial Black;
 }

@@ -78,7 +78,7 @@ def address():
       # os.system('git commit -m "data update"')
     value = pddata.confirmed[-1]
     death = list(deathdata[deathdata['gubun']==data.split()[0]]['deathCnt'])[0]
-    return render_template('current_status.html',data=' '.join(data.split()[:2]),value=value,death=death,city=data.split()[0])
+    return render_template('current_status.html',data=' '.join(data.split()[:2]),value=int(value),death=int(death),city=data.split()[0])
 
   elif request.method == 'GET':
     data = {}

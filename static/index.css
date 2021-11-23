@@ -41,10 +41,6 @@ section.googlemap .ratio{
     overflow: hidden;
 }
 
-.Covid_Confirm, .Covid_Death {
-    font-size: 150%;
-    font-family: Arial Black;
-}
 
 /* Confirmed Cases / Death part */
 
