@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect
 import datetime
 from flask.helpers import url_for
 import numpy as np
+import os
 # export FLASK_ENV=development
 # set FLASK_APP = app.py
 # flask run -p 5500 (kakaomap api를 실행시키기 위해서 등록한 port를 이용해야하기 때문)
@@ -21,9 +22,11 @@ def index():
 def address():
   if request.method == 'POST':
     data = request.form['addname']
+    print(data)
+    print(data.split())
     # Check datafile
     try:
-      pddata = pd.read_csv('TbCorona19CountStatusJCG_'+str(datetime.date.today())+'.csv',index=True,index_col='date')
+      pddata = pd.read_csv('https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_'+str(datetime.date.today())+'.csv',index=True,index_col='date')
     except:
       # Connecting data district with local index need
       confirmed = []
@@ -44,6 +47,11 @@ def address():
       pddata=pd.DataFrame({'confirmed':confirmed},index=date_data).sort_index(ascending=True)
       pddata.confirmed = pddata.confirmed.fillna(0).cumsum()
       pddata.to_csv('TbCorona19CountStatusJCG_'+str(datetime.date.today())+'.csv',index=True,index_label='date')
+      os.system('git remote add origin https://github.com/nyangzip/DEVPROJECT.git')
+      os.system('git push -u origin main')
+      os.system('git config --global user.email "bakerson111@gmail.com"')
+      os.system('git config --global user.name "JongminKim"')
+      os.system('git commit -m "data update"')
     try:
       deathdata = pd.read_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
     except:
@@ -55,6 +63,12 @@ def address():
       resp = requests.get(serviceurl,params=params)
       dictdata = xmltodict.parse(resp.content)
       deathdata=pd.DataFrame(dictdata['response']['body']['items']['item'])
+      deathdata.to_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
+      os.system('git remote add origin https://github.com/nyangzip/DEVPROJECT.git')
+      os.system('git push -u origin main')
+      os.system('git config --global user.email "bakerson111@gmail.com"')
+      os.system('git config --global user.name "JongminKim"')
+      os.system('git commit -m "data update"')
     value = pddata.confirmed[-1]
     death = list(deathdata[deathdata['gubun']=='서울']['deathCnt'])[0]
     return render_template('current_status.html',data=data,value=value,death=death)
