@@ -1,0 +1,53 @@
+.title {
+    margin: auto;
+    width: 50%;
+    text-align: center;
+}
+
+div > h1.common_title {
+    font-size: 150%;
+    font-family: Arial Black;
+    text-align: left;
+    vertical-align: bottom;
+    margin-top:10; margin-left: 8;
+}
+
+
+.row {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+    
+}
+
+header {
+    width: 50%;
+    margin: auto;
+}
+
+header .container {
+    align-items: center;
+}
+
+section.googlemap .container {
+    padding-top: 10px;
+    position: relative;
+    width: 100%;
+    border-color: black;
+}
+
+section.googlemap .ratio{
+    overflow: hidden;
+}
+
+/* .search_button_1 {
+    position: relative;
+    left: 15%;
+    width: 10%; height: 80%;
+    margin-top:0; margin-left:0;
+    background-color: rgba(84,130,53,1);
+    font-size: 20; color: whitesmoke;
+    text-align: center; vertical-align: middle;
+    font-family: Arial Nova; font-weight:bold;
+
+} */

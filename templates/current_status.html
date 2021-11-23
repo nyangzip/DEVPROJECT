@@ -41,22 +41,24 @@
     <link rel="stylesheet" href="../static/test.css">
 </head>
 <body>
-    <p class="title">
-        <br>
-        Find your address
-    </p>
+    <div class='bg-dark w-100'>
+        <h1 class='common_title'>
+          <span style='color: rgba(255,255,255,1)'>COVID-19</span>
+          <span style='color: rgba(255,230,153,1)'> Around Us</span>
+        </h1>
+    </div>
     <div class="row">
         <form action="current_status" method="post">
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <button class="btn btn-outline-secondary" type="button" onclick="findAddr()">Find your address</button>
+                    <button class="btn btn-outline-secondary bg-secondary text-white" type="button" onclick="findAddr()">Find your address</button>
                 </div>
                 <div class='col'>
                     <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="{{data}}"> 
                     <!-- <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="서울 서대문구 거북골로 3"> -->
                 </div>
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary btn-primary text-white" type="submit" value="submit">Submit</button>
+                    <button class="btn btn-outline-secondary bg-dark text-white" type="submit" value="submit">Submit</button>
                 </div>
             </div>
         </form>
@@ -75,6 +77,7 @@
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
+            <!-- <div class="tabbable-panel"> -->
             <div class="row w-100">
                 <div class="row">
                     <div class="col-md-4 text-danger text-left display-6 align-middle">
@@ -145,7 +148,7 @@
 
                     // set the dimensions and margins of the graph
                     const margin = {top: 10, right: 30, bottom: 90, left: 40},
-                        width = 1000,
+                        width = 800,
                         height = 450 - margin.top - margin.bottom;
                     
                     // append the svg object to the body of the page
