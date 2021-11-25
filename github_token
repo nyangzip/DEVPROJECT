@@ -1,3 +1,5 @@
 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
 export FLASK_ENV=development
 set FLASK_APP=app.py
+https://blog.naver.com/zzangjiwon0225/222479715998 : github 기본 명령어에 대한 이해
+push를 해야 결정적으로 반영된다.
