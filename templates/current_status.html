@@ -165,6 +165,7 @@
                     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
                     // Parse the Data
                     d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_"+date+".csv").then(function(data) {
+                    // d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_2021-11-25.csv").then(function(data) {
 
                     // X axis
                     const x = d3.scaleBand()
