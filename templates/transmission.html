@@ -1,94 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script>
-        function findAddr(){
-            new daum.Postcode({
-                oncomplete: function(data) {
-                    console.log(data);
-                    // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
-                    // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
-                    // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-                    var roadAddr = data.roadAddress; // 도로명 주소 변수
-                    // var roadAddr = name; // 도로명 주소 변수
-                    var jibunAddr = data.jibunAddress; // 지번 주소 변수
-                    // 우편번호와 주소 정보를 해당 필드에 넣는다.
-                    // document.getElementById('member_post').value = data.zonecode;
-                    document.getElementById('addname').value = roadAddr;
-                    if(roadAddr !== ''){
-                        document.getElementById("addname").value = roadAddr;
-                    } 
-                    else if(jibunAddr !== ''){
-                        document.getElementById("addname").value = jibunAddr;
-                    }
-                }
-            }).open();
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/static/transmission.css">
+  <script>
+    function findAddr(){
+      new daum.Postcode({
+          oncomplete: function(data) {
+            console.log(data);
+            // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+            // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
+            // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+            var roadAddr = data.roadAddress; // 도로명 주소 변수
+            // var roadAddr = name; // 도로명 주소 변수
+            var jibunAddr = data.jibunAddress; // 지번 주소 변수
+            // 우편번호와 주소 정보를 해당 필드에 넣는다.
+            // document.getElementById('member_post').value = data.zonecode;
+            document.getElementById('addname').value = roadAddr;
+            if(roadAddr !== ''){
+                document.getElementById("addname").value = roadAddr;
+            } 
+            else if(jibunAddr !== ''){
+                document.getElementById("addname").value = jibunAddr;
+            }
+          }
+        }).open();
+      }
+  </script>
+
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/transmission.css">
+  <!-- Load d3.js -->
+  <script src="/static/d3.v4.min.js"></script>
+  <script src="/static/d3-geo-projection.v2.min.js"></script>
+  <style>
+    .title {
+          margin: auto;
+          width: 50%;
+          text-align: center;
+      }
+
+      div > h1.common_title {
+          font-size: 150%;
+          font-family: Arial Black;
+          text-align: left;
+          vertical-align: bottom;
+          margin-top:10; margin-left: 8;
+      }
+
+      html {
+          font-family: 'Arial', sans-serif;
+      }
+
+/* My part */
+
+      .row {
+      margin: auto;
+      width: 50%;
+      padding: 10px;
+      }
+
+      header {
+          width: 50%;
+          margin: auto;
+      }
+
+      header .container {
+          align-items: center;
+      }
+
+      #main_viz{
+        display: flex;
+        justify-content: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+      :root {
+        /* --blue-ocean: #0077be; */
+        /* --blue-ocean: Black; */
+        /* --blue-ocean: #ffffff; */
+        --selected: #3bf573;
+        --selected-from: #25d8f7;
+        --selected-to: #f5ee33;
+        --point-fill: red;
+        --connection: red;
+        --connection-to: #1ab01f;
+        --connection-from: #29b0ff;
+        --anim-transmission-line: dash 5s ease-in forwards infinite;
+      }
+
+      #map_svg {
+        /* background-color: var(--blue-ocean); */
+        background-color: white;
+        outline: solid black;
+      }
+
+      .city_path {
+        transition: 0.2s;
+        fill: #ffffff;
+        /* Ngniah's part */
+        /* stroke: var(--blue-ocean);
+        stroke-width: 0.1px; */
+
+        /* Jongmin's part */
+        stroke: black;
+        stroke-width: 0.5px;
+      }
+
+      .city_path.active {
+        fill: #c0c0c0;
+      }
+
+      .city_path.selected {
+        fill: var(--selected);
+      }
+
+      .city_path.selected_to {
+        fill: var(--selected-to);
+      }
+
+      .city_path.selected_from {
+        fill: var(--selected-from);
+      }
+
+      .point {
+        fill: var(--point-fill);
+      }
+
+      .connection.child {
+        stroke: var(--connection-to);
+        stroke-width: 0.6px;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: var(--anim-transmission-line);
+        opacity: 1;
+      }
+
+      .connection.parent {
+        transition: 0.2s;
+        stroke: var(--connection-from);
+        stroke-width: 0.6px;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: var(--anim-transmission-line);
+        opacity: 1;
+      }
+
+      @keyframes dash {
+        from {
+          stroke-dashoffset: 1000;
         }
-    </script>
-    
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/test.css">
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      .connection {
+        fill: none;
+        stroke: var(--connection);
+        stroke-width: 0.3px;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: var(--anim-transmission-line);
+      }
+
+      .hidden {
+        opacity: 0;
+      }
+
+  </style>
 </head>
+<!-- Create an element where the map will take place -->
 <body>
-    <p class="title">
-        <br>
-        Find your address
-    </p>
-    <div class="row">
-        <form method="post" action="/">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <button class="btn btn-outline-secondary" type="button" onclick="findAddr()">Find your address</button>
-                </div>
-                <div class='col'>
-                    <input name='addname' id='addname' type="text" class="form-control" placeholder="Only services for metropolitan cities available" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                </div>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary btn-primary text-white" type="submit" value="submit">Submit</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <header class="mx-auto">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link" id="home-tab" data-toggle="tab" href="current_status.html" role="tab" aria-controls="home" aria-selected="flase">Current Status</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" id="profile-tab" data-toggle="tab" href="transmission.html" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="contact-tab" data-toggle="tab" href="why.html" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
-            </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                <div id="map" style="width:100%;height:400px;"></div>
-                <!-- https://developers.kakao.com/console/app/666698/config/appKey -->
-                <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a9fbb61ef0264a144b9ff5e1255f887e"></script>
-                <script>
-                        var container = document.getElementById('map');
-                        var options = {
-                            center: new kakao.maps.LatLng(33.450701, 126.570667),
-                            level: 3
-                        };
-                
-                        var map = new kakao.maps.Map(container, options);
-                </script>
-            </div>
-            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            </div>
-            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            </div>
+  <div class='bg-dark w-100'>
+    <h1 class='common_title'>
+      <span style='color: rgba(255,255,255,1)'>COVID-19</span>
+      <span style='color: rgba(255,230,153,1)'> Around Us</span>
+    </h1>
+  </div>
+  <div class="row">
+    <form action="current_status" method="post">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <button class="btn btn-outline-secondary bg-secondary text-white" type="button" onclick="findAddr()">Find your address</button>
         </div>
-    </header>
-
+        <div class='col'>
+          <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="{{data}}"> 
+          <!-- <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="서울 서대문구 거북골로 3"> -->
+        </div>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary bg-dark text-white" type="submit" value="submit">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <header class="mx-auto">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link" id="home-tab" data-toggle="tab" href="{{ url_for('address') }}" role="tab" aria-controls="home" aria-selected="false">Current Status</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="{{ url_for('transmission') }}" role="tab" aria-controls="profile" aria-selected="true">Transmission Path</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="main_viz">
+      <script type="text/javascript" src="/static/map.js"></script>
+    </div>
+  </header>
+    
 </body>
 </html>

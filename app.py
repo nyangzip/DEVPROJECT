@@ -31,7 +31,7 @@ def address():
     print(data.split())
     # Check datafile
     try:
-      pddata = pd.read_csv('https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_'+str(datetime.date.today())+'.csv',index=True,index_col='date')
+      pddata = pd.read_csv('https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_col='date')
     except:
       # Connecting data district with local index need
       confirmed = []
@@ -51,7 +51,7 @@ def address():
               date_data.append(date_index)
       pddata=pd.DataFrame({'confirmed':confirmed},index=date_data).sort_index(ascending=True)
       pddata.confirmed = pddata.confirmed.fillna(0).cumsum()
-      pddata.to_csv('TbCorona19CountStatusJCG_'+str(datetime.date.today())+'.csv',index=True,index_label='date')
+      pddata.to_csv('TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_label='date')
       # os.system('git remote add origin https://github.com/nyangzip/DEVPROJECT.git')
       # os.system('git push -u origin main')
       # os.system('git config --global user.email "bakerson111@gmail.com"')
@@ -83,10 +83,21 @@ def address():
   elif request.method == 'GET':
     data = {}
     print(data)
-    raise SystemError
+    # raise SystemError
     return render_template('index.html')
   
-  
+
+# @app.route('/c')
+# def transmission():
+#   return render_template('transmission.html')
+
+@app.route('/transmission')
+def transmission():
+  return render_template('transmission.html')
+
+@app.route('/WhyVaccine')
+def WhyVaccine():
+  return render_template('WhyVaccine.html')
 
 
 @app.route('/<usr>')

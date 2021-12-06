@@ -118,13 +118,13 @@
     <header class="mx-auto">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link disabled" id="home-tab" data-toggle="tab" href="current_status.html" role="tab" aria-controls="home" aria-selected="flase">Current Status</a>
+                <a class="nav-link disabled" id="home-tab" data-toggle="tab" href="{{ url_for('address') }}" role="tab" aria-controls="home" aria-selected="flase">Current Status</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="transmission.html" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('transmission') }}" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="contact-tab" data-toggle="tab" href="why.html" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">

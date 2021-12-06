@@ -30,6 +30,7 @@
         }
     </script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="https://d3js.org/d3.v6.js"></script>
@@ -63,13 +64,13 @@
     <header class="mx-auto">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="current_status.html" role="tab" aria-controls="home" aria-selected="true">Current Status</a>
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="{{ url_for('address') }}" role="tab" aria-controls="home" aria-selected="true">Current Status</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="transmission.html" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('transmission') }}" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="contact-tab" data-toggle="tab" href="why.html" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -164,8 +165,8 @@
                     var today = new Date();   
                     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
                     // Parse the Data
-                    d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_"+date+".csv").then(function(data) {
-                    // d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_2021-11-25.csv").then(function(data) {
+                    // d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_"+date+".csv").then(function(data) {
+                    d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_2021-11-25.csv").then(function(data) {
 
                     // X axis
                     const x = d3.scaleBand()
