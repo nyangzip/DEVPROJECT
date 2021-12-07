@@ -54,12 +54,6 @@ def address():
         pddata=pd.DataFrame({'confirmed':confirmed},index=date_data).sort_index(ascending=True)
         pddata.confirmed = pddata.confirmed.fillna(0).cumsum()
         pddata.to_csv('TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_label='date')
-        # os.system('git remote add origin https://github.com/nyangzip/DEVPROJECT.git')
-        # os.system('git push -u origin main')
-        # os.system('git config --global user.email "bakerson111@gmail.com"')
-        # os.system('git config --global user.name "JongminKim"')
-        # os.system('git pull')
-        # os.system('git commit -m "data update"')
       try:
         deathdata = pd.read_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
       except:
@@ -72,12 +66,6 @@ def address():
         dictdata = xmltodict.parse(resp.content)
         deathdata=pd.DataFrame(dictdata['response']['body']['items']['item'])
         deathdata.to_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
-        # os.system('git remote add origin https://github.com/nyangzip/DEVPROJECT.git')
-        # os.system('git push -u origin main')
-        # os.system('git config --global user.email "bakerson111@gmail.com"')
-        # os.system('git config --global user.name "JongminKim"')
-        # os.system('git pull')
-        # os.system('git commit -m "data update"')
       value = pddata.confirmed[-1]
       death = list(deathdata[deathdata['gubun']==data.split()[0]]['deathCnt'])[0]
       return render_template('current_status.html',data=' '.join(data.split()[:2]),value=int(value),death=int(death),city=data.split()[0],maxvalue=int(max(pddata['confirmed'])),alldata = data)
@@ -104,12 +92,6 @@ def address():
         pddata=pd.DataFrame({'confirmed':confirmed},index=date_data).sort_index(ascending=True)
         pddata.confirmed = pddata.confirmed.fillna(0).cumsum()
         pddata.to_csv('TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_label='date')
-        # os.system('git remote add origin https://github.com/nyangzip/DEVPROJECT.git')
-        # os.system('git push -u origin main')
-        # os.system('git config --global user.email "bakerson111@gmail.com"')
-        # os.system('git config --global user.name "JongminKim"')
-        # os.system('git pull')
-        # os.system('git commit -m "data update"')
       try:
         deathdata = pd.read_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
       except:
@@ -122,12 +104,6 @@ def address():
         dictdata = xmltodict.parse(resp.content)
         deathdata=pd.DataFrame(dictdata['response']['body']['items']['item'])
         deathdata.to_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
-        # os.system('git remote add origin https://github.com/nyangzip/DEVPROJECT.git')
-        # os.system('git push -u origin main')
-        # os.system('git config --global user.email "bakerson111@gmail.com"')
-        # os.system('git config --global user.name "JongminKim"')
-        # os.system('git pull')
-        # os.system('git commit -m "data update"')
       value = pddata.confirmed[-1]
       death = list(deathdata[deathdata['gubun']==data.split()[0]]['deathCnt'])[0]
       return render_template('current_status_not.html',data=' '.join(data.split()[:2]),value=int(value),death=int(death),city=data.split()[0],maxvalue=int(max(pddata['confirmed'])),alldata = data)      
