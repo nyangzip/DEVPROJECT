@@ -1,16 +1,12 @@
 function int_date(str_date) {
-  [y,m,d] = str_date.split('-')
-  return parseInt(y)*10000 + parseInt(m)*100 + parseInt(d)
+  [y,m,d] = str_date.split('-');
+  return parseInt(y)*10000 + parseInt(m)*100 + parseInt(d);
 }
 
-var region_code_id_prefix = "rc"
-var point_code_id_prefix = "pc"
-var connection_from_prefix = "fr"
-var connection_to_prefix = "to"
-
-// main map
-// var map_json = "/static/sel_regions.json";
-// var transmission_json = "/static/transmission_simple.json";
+var region_code_id_prefix = "rc";
+var point_code_id_prefix = "pc";
+var connection_from_prefix = "fr";
+var connection_to_prefix = "to";
 
 var map_json = "/static/korea_map_readable.json";
 var transmission_json = "/static/transmission.json";
@@ -35,7 +31,7 @@ var path = d3.geoPath()
 
 d3.select("#main_viz")
   .attr("width", width)
-  .attr("height", height)
+  .attr("height", height);
 
 // HTML element
 var svg = d3.select("#main_viz").append("svg")
@@ -45,14 +41,24 @@ var svg = d3.select("#main_viz").append("svg")
   .attr("id", "map_svg");
 
 // HTML element
+d3.select("header").append("span")
+  .attr("class", "normal_text")
+  .text("From");
+
 d3.select("header").append("input")
   .attr("type", "date")
   .attr("id", "input_date_s")
   .attr("value", "2020-01-01")
   // .range([width, 10])
   .on("change", function() {
-    date_s = int_date(d3.select(this).node().value)
+    date_s = int_date(d3.select(this).node().value);
+    update_transmission();
   });
+
+// HTML element
+d3.select("header").append("span")
+  .attr("class", "normal_text")
+  .text("To");
 
 // HTML element
 d3.select("header").append("input")
@@ -60,22 +66,24 @@ d3.select("header").append("input")
   .attr("id", "input_date_e")
   .attr("value", "2020-03-30")
   .on("change", function() {
-    date_e = int_date(d3.select(this).node().value)
-  })
+    date_e = int_date(d3.select(this).node().value);
+    update_transmission();
+  });
 
-
-// HTML element
-d3.select("header").append("input")
-  .attr("type", "button")
-  .attr("id", "map_update")
-  .attr("value", "Show transmission within range")
-  .on("click", update_transmission);
+d3.select("header").append("div")
+  .attr("id", "tooltip")
+  .text("")
+  .classed("hidden", true);
 
 // date filter
-var date_s = int_date(d3.select("#input_date_s").node().value)
-var date_e = int_date(d3.select("#input_date_e").node().value)
+var date_s = int_date(d3.select("#input_date_s").node().value);
+var date_e = int_date(d3.select("#input_date_e").node().value);
 
 function update_transmission() {
+  d3.json(transmission_json, parse_transmission);
+}
+
+function show_map() {
   d3.json(map_json, draw_map);
 }
 
@@ -92,12 +100,25 @@ function arc_link(x1,y1,x2,y2) {
   return "M"+x1+" "+y1+"Q"+ex+" "+ey+" "+x2+" "+y2;
 }
 
+function get_region_center_offset(region_code) {
+  var region_path = d3.select("#" + region_code_id_prefix + region_code);
+  var class_list = region_path.attr("class").split(" ");
+  var dx, dy;
+  for (var i in class_list) {
+    var c = class_list[i];
+    if (c.startsWith("offset")) {
+      dx = c.split("_")[1];
+      dy = c.split("_")[2];
+    }
+  }
+  return [parseFloat(dx), parseFloat(dy)];
+}
+
 function parse_transmission(error, raw_patients) {
-  var patient_count_max = 0;
   var region_patient_count = {};
   var region_connection = [];
 
-  var patients = {}
+  var patients = {};
 
   for (var pid in raw_patients) {
     if ((raw_patients[pid].date >= date_s) && (raw_patients[pid].date <= date_e)) {
@@ -106,78 +127,75 @@ function parse_transmission(error, raw_patients) {
   }
 
   for (var pid in patients) {
-    var patient = patients[pid]
+    var patient = patients[pid];
     var region_code = patient.code;
     if (region_patient_count.hasOwnProperty(region_code)) {
       region_patient_count[region_code] += 1;
     } else {
       region_patient_count[region_code] = 1;
     }
-    if (patient_count_max < region_patient_count[region_code]) {
-      patient_count_max = region_patient_count[region_code];
-    }
     for (var i in patient.branch) {
       var iid = patient.branch[i];
       if (patients.hasOwnProperty(iid)) {
         if (patients[pid].code != patients[iid].code) {
-          region_connection.push(patients[pid].code + "." + patients[iid].code)
+          region_connection.push(patients[pid].code + "." + patients[iid].code);
         }
       }
     }
   }
   //unique only
-  region_connection = region_connection.filter((v, i, a) => a.indexOf(v) === i)
+  region_connection = region_connection.filter((v, i, a) => a.indexOf(v) === i);
 
-  for (var pid in patients) {
-    var region_code = patients[pid].code;
-    if (region_patient_count.hasOwnProperty(region_code)) {
-      region_patient_count[region_code] += 1;
-    } else {
-      region_patient_count[region_code] = 1;
-    }
-    if (patient_count_max < region_patient_count[region_code]) {
-      patient_count_max = region_patient_count[region_code];
-    }
-  }
+  //new thing; needs to turn off selection here
+  d3.selectAll(".selected").classed("selected", false);
+  d3.selectAll(".selected_to").classed("selected_to", false);
+  d3.selectAll(".selected_from").classed("selected_from", false);
+  //new thing; needs to turn off selection here
 
+  svg.selectAll(".point").remove();
   var svg_point = svg.selectAll(".point").data(d3.entries(region_patient_count));
   svg_point.enter()
     .append("circle")
-    .merge(svg_point)
+    // .merge(svg_point) //might not needed
     .attr("class", "point")
     .attr("id", function(data, i) {
       return point_code_id_prefix + data.key;
     })
     .attr("cx", function(data, i) {
       var region_path = d3.select("#" + region_code_id_prefix + data.key);
+      var [dx, dy] = get_region_center_offset(data.key);
       var region_loc = region_path.node().getBBox();
-      return region_loc.x + region_loc.width/2;
+      return region_loc.x + region_loc.width/2 + dx*scale
     })
     .attr("cy", function(data, i) {
       var region_path = d3.select("#" + region_code_id_prefix + data.key);
+      var [dx, dy] = get_region_center_offset(data.key);
       var region_loc = region_path.node().getBBox();
-      return region_loc.y + region_loc.height/2;
+      return region_loc.y + region_loc.height/2 + dy*scale
     })
     .attr("r", function(data, i) {
-      return data.value/patient_count_max*2+1;
+      return 1+Math.log(data.value) / Math.log(20);
     });
-  svg_point.exit().remove()
+  // svg_point.exit().remove();
 
+  svg.selectAll(".connection").remove();
   var svg_connection = svg.selectAll(".connection").data(region_connection);
   svg_connection.enter()
     .append("path")
-    .merge(svg_connection)
+    // .merge(svg_connection) //might not needed
     .attr("class", function(data, i) {
       var sd = data.split(".");
       return "connection " + connection_from_prefix + sd[0] + " " + connection_to_prefix + sd[1];
     })
     .attr("d", function(data, i) {
       var sd = data.split(".");
+      var [sdx, sdy] = get_region_center_offset(sd[0]);
+      var [ddx, ddy] = get_region_center_offset(sd[1]);
       var s = d3.select("#" + region_code_id_prefix + sd[0]).node().getBBox();
       var d = d3.select("#" + region_code_id_prefix + sd[1]).node().getBBox();
-      return arc_link(s.x + s.width/2,s.y + s.height/2,d.x + d.width/2,d.y + d.height/2);
-    })
-  svg_connection.exit().remove()
+      return arc_link(s.x + s.width/2 + sdx*scale, s.y + s.height/2 + sdy*scale, d.x + d.width/2 + ddx*scale, d.y + d.height/2 + ddy*scale);
+    });
+  // svg_connection.exit().remove();
 }
 
 function draw_map(error, regions) {
@@ -186,16 +204,20 @@ function draw_map(error, regions) {
   svg_city_path.enter()
     .append("path")
     .merge(svg_city_path)
-    .attr("class", "city_path")
+    .attr("class", function(d) {
+      return "city_path offset_" + d.properties.offset[0] + "_" + d.properties.offset[1];
+    })
     .attr("d", path)
     .attr("id", function(d) {
-      return region_code_id_prefix + d.properties.code
+      return region_code_id_prefix + d.properties.code;
     })
     .on("mouseover", function(d) {
-      d3.select(this).classed("active", true)
+      d3.select(this).classed("active", true);
+      d3.select("#tooltip").classed("hidden", false).text(d.properties.name_eng);
     })
     .on("mouseout", function(d) {
-      d3.select(this).classed("active", false)
+      d3.select(this).classed("active", false);
+      d3.select("#tooltip").classed("hidden", true);
     })
     .on("click", function(d) {
       var x = d3.select(this).classed("selected")
@@ -210,6 +232,17 @@ function draw_map(error, regions) {
         d3.selectAll(".connection").classed("hidden", false); //show them back as promised
       }
       d3.select(this).classed("selected", !x);
+      d3.selectAll("."+connection_to_prefix+d.properties.code).classed("hidden", false).classed("parent", !x);
+      d3.selectAll("."+connection_to_prefix+d.properties.code)
+        .each(function() {
+          var class_list = d3.select(this).attr("class").split(" ");
+          for (var i in class_list) {
+            var c = class_list[i];
+            if (c.startsWith(connection_from_prefix)) {
+              d3.selectAll("#"+region_code_id_prefix+c.substr(2)).classed("selected_from", !x);
+            }
+          }
+        });
       d3.selectAll("."+connection_from_prefix+d.properties.code).classed("hidden", false).classed("child", !x);
       d3.selectAll("."+connection_from_prefix+d.properties.code)
         .each(function() {
@@ -217,28 +250,37 @@ function draw_map(error, regions) {
           for (var i in class_list) {
             var c = class_list[i];
             if (c.startsWith(connection_to_prefix)) {
-              var region_code = c.substr(2);
-              console.log("#"+region_code_id_prefix+region_code);
-              d3.selectAll("#"+region_code_id_prefix+region_code).classed("selected_to", !x);
+              d3.selectAll("#"+region_code_id_prefix+c.substr(2)).classed("selected_to", !x);
             }
           }
-        })
-      d3.selectAll("."+connection_to_prefix+d.properties.code).classed("hidden", false).classed("parent", !x)
-      d3.selectAll("."+connection_to_prefix+d.properties.code)
-        .each(function() {
-          var class_list = d3.select(this).attr("class").split(" ");
-          for (var i in class_list) {
-            var c = class_list[i];
-            if (c.startsWith(connection_from_prefix)) {
-              var region_code = c.substr(2);
-              console.log("#"+region_code_id_prefix+region_code);
-              d3.selectAll("#"+region_code_id_prefix+region_code).classed("selected_from", !x);
-            }
-          }
-        })
+        });
     })
-  svg_city_path.exit().remove()
-  d3.json(transmission_json, parse_transmission);
+  svg_city_path.exit().remove();
+  update_transmission();
 }
 
-update_transmission()
+show_map();
+(function() {
+  document.onmousemove = handleMouseMove;
+  function handleMouseMove(event) {
+    var eventDoc, doc, body;
+
+    event = event || window.event;
+
+    if (event.pageX == null && event.clientX != null) {
+      eventDoc = (event.target && event.target.ownerDocument) || document;
+      doc = eventDoc.documentElement;
+      body = eventDoc.body;
+
+      event.pageX = event.clientX +
+        (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+        (doc && doc.clientLeft || body && body.clientLeft || 0);
+      event.pageY = event.clientY +
+        (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+        (doc && doc.clientTop  || body && body.clientTop  || 0 );
+    }
+    d3.select("#tooltip")
+      .style("left", event.pageX + 20 + "px")
+      .style("top", event.pageY + 20 + "px")
+  }
+})();

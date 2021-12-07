@@ -94,8 +94,8 @@
 <body>
     <div class='bg-dark w-100'>
         <h1 class='common_title'>
-          <span style='color: rgba(255,255,255,1)'>COVID-19</span>
-          <span style='color: rgba(255,230,153,1)'> Around Us</span>
+            <a href="{{ url_for('main') }}" style="text-decoration: none;"><span style='color: rgba(255,255,255,1)'>COVID-19</span></a>
+            <a href="{{ url_for('main') }}" style="text-decoration: none;"><span class="label label-danger" style='color: rgba(255,230,153,1);'> Around Us</span></a>
         </h1>
     </div>
     <div class="row w-50">
@@ -105,7 +105,7 @@
                     <button class="btn btn-outline-secondary bg-secondary text-white" type="button" onclick="findAddr()">Find your address</button>
                 </div>
                 <div class='col'>
-                    <input name='addname' id='addname' type="text" class="form-control" placeholder="Only services for metropolitan cities available" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <input name='addname' id='addname' type="text" class="form-control" placeholder="Find your address using button" aria-label="Recipient's username" aria-describedby="basic-addon2">
                 </div>
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary bg-dark text-white" type="submit" value="submit">Submit</button>

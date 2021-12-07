@@ -36,7 +36,7 @@
     <link rel="stylesheet" href="/static/WhyVaccine.css">
     <style>
 /* My part */
-      .title {
+.title {
           margin: auto;
           width: 50%;
           text-align: center;
@@ -90,8 +90,8 @@
   <body>
     <div class='bg-dark w-100'>
       <h1 class='common_title'>
-        <span style='color: rgba(255,255,255,1)'>COVID-19</span>
-        <span style='color: rgba(255,230,153,1)'> Around Us</span>
+        <a href="{{ url_for('main') }}" style="text-decoration: none;"><span style='color: rgba(255,255,255,1)'>COVID-19</span></a>
+        <a href="{{ url_for('main') }}" style="text-decoration: none;"><span class="label label-danger" style='color: rgba(255,230,153,1);'> Around Us</span></a>
       </h1>
     </div>
     <div class="row">
@@ -101,7 +101,7 @@
                   <button class="btn btn-outline-secondary bg-secondary text-white" type="button" onclick="findAddr()">Find your address</button>
               </div>
               <div class='col'>
-                  <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="{{data}}"> 
+                  <input name='addname' id='addname' type="text" class="form-control" placeholder="Find your address using button" aria-label="Recipient's username" aria-describedby="basic-addon2" value="{{data}}"> 
                   <!-- <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="서울 서대문구 거북골로 3"> -->
               </div>
               <div class="input-group-append">
@@ -124,8 +124,8 @@
         </li>
       </ul>
       <div class="tab-content" id="myTabContent">
-        <!-- <div class ='container-fluid'>
-          <div class='row'> -->
+    <!-- <div class ='container-fluid'>
+      <div class='row'> -->
         <div id="chart">
           <div class='header'>
             <h3>US COVID-19 7-Day Case Rates per 100,000</h3>
@@ -158,324 +158,386 @@
             </div>
           </div>
         </div>
-          <!-- </div>
-        </div> -->
       </div>
-      <script>
-        var glines
-        var mouseG
-        var tooltip
+    </div>
+    <script>
+      var glines
+      var mouseG
+      var tooltip
 
-        var parseDate = d3.timeParse("%Y-%m")
-        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
+      var parseDate = d3.timeParse("%Y-%m")
+      var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
 
-        var margin = {top: 80, right: 160, bottom: 40, left: 30}
-        var width = 1000 - margin.left - margin.right
-        var height = 500 - margin.top - margin.bottom
+      var margin = {top: 80, right: 280, bottom: 40, left: 30}
+      var width = 1000 - margin.left - margin.right
+      var height = 500 - margin.top - margin.bottom
 
-        var lineOpacity = 1
-        var lineStroke = "3px"
+      var lineOpacity = 1
+      var lineStroke = "3px"
 
-        var axisPad = 6 // axis formatting
-        var R = 6 //legend marker
+      var axisPad = 6 // axis formatting
+      var R = 6 //legend marker
 
-        var category = ["Vaccinated", "Unvaccinated"]
-        // since Category B and E are really close to each other, assign them diverging colors
-        var color = d3.scaleOrdinal()
-          .domain(category)
-          .range(["#2E7576", "#B7433D"])
+      var category = ["Vaccinated", "Unvaccinated"]
+      // assign red to Unvaccinated and green to unvaccinated
+      var color = d3.scaleOrdinal()
+        .domain(category)
+        .range(["#2E7576", "#B7433D"])
 
-        d3.csv("https://raw.githubusercontent.com/Jasper472/hvadata/main/coecasecomb6.csv", data => {
+      d3.csv("https://raw.githubusercontent.com/Jasper472/hvadata/main/coecasecomb6.csv", data => {
 
-          var res = data.map((d,i) => {
-            return {
-              date : parseDate(d.weekofyear),
-              group_no : +d.group_no,
-              state : d.state,
-              value : +d.value
-            }
-          })
-
-          var xScale = d3.scaleTime() //ORIGINAL
-            .domain(d3.extent(res, d=>d.date))
-            .range([0, width])
-
-          var widthScale = d3.scaleLinear()   //MANUAL
-            .domain(14, 40)
-            .range([0, width])
-
-          var yScale = d3.scaleLinear()
-            .domain([0, 1000])
-            .range([height, 0]);
-
-          var svg = d3.select("#chart").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append('g')
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-
-          // CREATE AXES // 
-          // render axis first before lines so that lines will overlay the horizontal ticks
-          var yAxis = d3.axisLeft(yScale).ticks(10, "s").tickSize(-width) //horizontal ticks across svg width
-          var xAxis = d3.axisBottom(widthScale).ticks(10, "s").tickSize(5)
-          
-
-          svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", `translate(0, ${height})`)
-            .call(xAxis)
-            .call(g => {
-              g.selectAll("line")
-                .attr('stroke', '#A9A9A9')
-              g.select(".domain")
-                .attr('stroke', '#A9A9A9')
-            })
-            .append('text')
-              .attr('x', 348)
-              .attr("y", 20)
-              .attr("fill", "#A9A9A9")
-              .text("Week 14 ..... Week 16 ..... Week 18 ..... Week 20 ..... Week 22 ..... Week 24 ..... Week 26 ..... Week 28 ..... Week 30 ..... Week 32 ..... Week 34 ..... Week 36 ..... Week 38")
-  
-          svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .call(g => {
-              g.selectAll("text")
-              .style("text-anchor", "middle")
-              .attr("x", -axisPad*2)
-              .attr('fill', '#A9A9A9')
-
-              g.selectAll("line")
-                .attr('stroke', '#A9A9A9')
-                .attr('stroke-width', 0.7) // make horizontal tick thinner and lighter so that line paths can stand out
-                .attr('opacity', 0.3)
-
-              g.select(".domain").remove()
-
-            })
-            .append('text')
-              .attr('x', 50)
-              .attr("y", -15)
-              .attr("fill", "#A9A9A9")
-              .text("Cases per 100K")
-
-
-          // CREATE LEGEND // 
-          var svgLegend = svg.append('g')
-              .attr('class', 'gLegend')
-              .attr("transform", "translate(" + (width + 20) + "," + 0 + ")")
-
-          var legend = svgLegend.selectAll('.legend')
-            .data(category)
-            .enter().append('g')
-              .attr("class", "legend")
-              .attr("transform", function (d, i) {return "translate(0," + i * 20 + ")"})
-
-          legend.append("circle")
-              .attr("class", "legend-node")
-              .attr("cx", 0)
-              .attr("cy", 0)
-              .attr("r", R)
-              .style("fill", d=>color(d))
-
-          legend.append("text")
-              .attr("class", "legend-text")
-              .attr("x", R*2)
-              .attr("y", R/2)
-              .style("fill", "#A9A9A9")
-              .style("font-size", 12)
-              .text(d=>d)
-
-          // line generator 
-          var line = d3.line()
-            .x(d => xScale(d.date))
-            .y(d => yScale(d.value))
-
-          renderChart(1) // inital chart render (set default to group_no 1 data)
-
-          // Update chart when radio button is selected
-          d3.selectAll(("input[name='group_no']")).on('change', function(){
-            updateChart(this.value)
-          })
-
-          function updateChart(group_no) {
-
-            var resNew = res.filter(d=>d.group_no == parseInt(group_no))
-
-            var res_nested = d3.nest()
-              .key(d=>d.state) // CHANGE1
-              .entries(resNew)
-
-            glines.select('.line') //select line path within line-group (which represents a vaccination status), then bind new data 
-              .data(res_nested)
-              .transition().duration(750)
-              .attr('d', function(d) {
-                return line(d.values)
-              })
-
-            mouseG.selectAll('.mouse-per-line')
-              .data(res_nested)
-
-            mouseG.on('mousemove', function () { 
-                var mouse = d3.mouse(this)
-                updateTooltipContent(mouse, res_nested)
-              })
+        var res = data.map((d,i) => {
+          return {
+            date : parseDate(d.weekofyear),
+            group_no : +d.group_no,
+            state : d.state,
+            value : +d.value
           }
+        })
 
-          function renderChart(group_no) {
+        var xScale = d3.scaleTime() //ORIGINAL
+          .domain(d3.extent(res, d=>d.date))
+          .range([0, width])
 
-            var resNew = res.filter(d=>d.group_no == parseInt(group_no))
+        var widthScale = d3.scaleLinear()   //MANUAL
+          .domain(14, 40)
+          .range([0, width])
 
-            var res_nested = d3.nest() // necessary to nest data so that keys represent each vaccination status
-              .key(d=>d.state) // CHANGE1
-              .entries(resNew)
+        var yScale = d3.scaleLinear()
+          .domain([0, 1000])
+          .range([height, 0]);
 
-            // APPEND MULTIPLE LINES //
-            var lines = svg.append('g')
-              .attr('class', 'lines')
+        var svg = d3.select("#chart").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append('g')
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            glines = lines.selectAll('.line-group')
-              .data(res_nested).enter()
-              .append('g')
-              .attr('class', 'line-group')
 
-            glines  
-              .append('path')
-                .attr('class', 'line')  
-                .attr('d', d => line(d.values))
-                .style('stroke', (d, i) => color(i))
-                .style('fill', 'none')
-                .style('opacity', lineOpacity)
-                .style('stroke-width', lineStroke)
 
-            // CREATE HOVER TOOLTIP WITH VERTICAL LINE //
-            tooltip = d3.select("#chart").append("div")
-              .attr('id', 'tooltip')
-              .style('position', 'absolute')
-              .style("background-color", "#D3D3D3")
-              .style('padding', 6)
-              .style('display', 'none')
+        // CREATE AXES // 
+        // render axis first before lines so that lines will overlay the horizontal ticks
+        var yAxis = d3.axisLeft(yScale).ticks(10, "s").tickSize(-width) //horizontal ticks across svg width
+        var xAxis = d3.axisBottom(widthScale).ticks(10, "s").tickSize(5)
+        
 
-            mouseG = svg.append("g")
-              .attr("class", "mouse-over-effects");
-
-            mouseG.append("path") // create vertical line to follow mouse
-              .attr("class", "mouse-line")
-              .style("stroke", "#A9A9A9")
-              .style("stroke-width", lineStroke)
-              .style("opacity", "0");
-
-            var lines = document.getElementsByClassName('line');
-
-            var mousePerLine = mouseG.selectAll('.mouse-per-line')
-              .data(res_nested)
-              .enter()
-              .append("g")
-              .attr("class", "mouse-per-line");
-
-            mousePerLine.append("circle")
-              .attr("r", 4)
-              .style("stroke", function (d) {
-                return color(d.key)
-              })
-              .style("fill", "none")
-              .style("stroke-width", lineStroke)
-              .style("opacity", "0");
-
-            mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
-              .attr('width', width) 
-              .attr('height', height)
-              .attr('fill', 'none')
-              .attr('pointer-events', 'all')
-              .on('mouseout', function () { // on mouse out hide line, circles and text
-                d3.select(".mouse-line")
-                  .style("opacity", "0");
-                d3.selectAll(".mouse-per-line circle")
-                  .style("opacity", "0");
-                d3.selectAll(".mouse-per-line text")
-                  .style("opacity", "0");
-                d3.selectAll("#tooltip")
-                  .style('display', 'none')
-
-              })
-              .on('mouseover', function () { // on mouse in show line, circles and text
-                d3.select(".mouse-line")
-                  .style("opacity", "1");
-                d3.selectAll(".mouse-per-line circle")
-                  .style("opacity", "1");
-                d3.selectAll("#tooltip")
-                  .style('display', 'block')
-              })
-              .on('mousemove', function () { // update tooltip content, line, circles and text when mouse moves
-                var mouse = d3.mouse(this)
-
-                d3.selectAll(".mouse-per-line")
-                  .attr("transform", function (d, i) {
-                    var xDate = xScale.invert(mouse[0]) // use 'invert' to get date corresponding to distance from mouse position relative to svg
-                    var bisect = d3.bisector(function (d) { return d.date; }).left // retrieve row index of date on parsed csv
-                    var idx = bisect(d.values, xDate);
-
-                    d3.select(".mouse-line")
-                      .attr("d", function () {
-                        var data = "M" + xScale(d.values[idx].date) + "," + (height);
-                        data += " " + xScale(d.values[idx].date) + "," + 0;
-                        return data;
-                      });
-                    return "translate(" + xScale(d.values[idx].date) + "," + yScale(d.values[idx].value) + ")";
-
-                  });
-
-                updateTooltipContent(mouse, res_nested)
-
-              })
-
-            }
-
-        function updateTooltipContent(mouse, res_nested) {
-
-          sortingObj = []
-          res_nested.map(d => {
-            var xDate = xScale.invert(mouse[0])
-            var bisect = d3.bisector(function (d) { return d.date; }).left
-            var idx = bisect(d.values, xDate)
-            sortingObj.push({key: d.values[idx].state, value: d.values[idx].value, group_no: d.values[idx].group_no, year: d.values[idx].date.getFullYear(), month: monthNames[d.values[idx].date.getMonth()]}) //CHANGE1
+        svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", `translate(0, ${height})`)
+          .call(xAxis)
+          .call(g => {
+            g.selectAll("line")
+              .attr('stroke', '#A9A9A9')
+            g.select(".domain")
+              .attr('stroke', '#A9A9A9')
           })
+          // .append('text')
+          //   .attr('x', 348)
+          //   .attr("y", 20)
+          //   .attr("fill", "#A9A9A9")
+          //   .text("Week 14 ..... Week 16 ..... Week 18 ..... Week 20 ..... Week 22 ..... Week 24 ..... Week 26 ..... Week 28 ..... Week 30 ..... Week 32 ..... Week 34 ..... Week 36 ..... Week 38")
+ 
+        svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .append('text')
+            .style("fill", "#A9A9A9")
+            .style("font-size", 12)
+            .attr('x', 5)
+            .attr("y", 20)
+            .attr("fill", "#A9A9A9")
+            .text("Week 15")
 
-          sortingObj.sort(function(x, y){
-            return d3.descending(x.value, y.value);
-          })
+        svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .append('text')
+            .style("fill", "#A9A9A9")
+            .style("font-size", 12)
+            .attr('x', 150)
+            .attr("y", 20)
+            .attr("fill", "#A9A9A9")
+            .text("Week 20")
 
-          var sortingArr = sortingObj.map(d=> d.key)
+        svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .append('text')
+            .style("fill", "#A9A9A9")
+            .style("font-size", 12)
+            .attr('x', 295)
+            .attr("y", 20)
+            .attr("fill", "#A9A9A9")
+            .text("Week 25")
 
-          var res_nested1 = res_nested.slice().sort(function(a, b){
-            return sortingArr.indexOf(a.key) - sortingArr.indexOf(b.key) // rank vehicle category based on price of value
-          })
+        svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .append('text')
+            .style("fill", "#A9A9A9")
+            .style("font-size", 12)
+            .attr('x', 440)
+            .attr("y", 20)
+            .attr("fill", "#A9A9A9")
+            .text("Week 30")
 
-          // tooltip
-          tooltip.html("Cases by vaccination status")
-            .style('display', 'block')
-            .style('left', d3.event.pageX + 20)
-            .style('top', d3.event.pageY - 20)
-            .style('font-size', 11.5)
-            .selectAll()
-            .data(res_nested1).enter() // for vaccination status, list cases per 100 thousand
-            .append('div')
-            .style('color', d => {
-              return color(d.key)
+        svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .append('text')
+            .style("fill", "#A9A9A9")
+            .style("font-size", 12)
+            .attr('x', 585)
+            .attr("y", 20)
+            .attr("fill", "#A9A9A9")
+            .text("Week 35")
+
+        svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .append('text')
+            .style("fill", "#A9A9A9")
+            .style("font-size", 12)
+            .attr('x', 701)
+            .attr("y", 20)
+            .attr("fill", "#A9A9A9")
+            .text("Week 39")
+
+
+        svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+          .call(g => {
+            g.selectAll("text")
+            .style("text-anchor", "middle")
+            .attr("x", -axisPad*2)
+            .attr('fill', '#A9A9A9')
+
+            g.selectAll("line")
+              .attr('stroke', '#A9A9A9')
+              .attr('stroke-width', 0.7) // make horizontal tick thinner and lighter so that line paths can stand out
+              .attr('opacity', 0.3)
+
+            g.select(".domain").remove()
+
+           })
+          .append('text')
+            .attr('x', 50)
+            .attr("y", -15)
+            .attr("fill", "#A9A9A9")
+            .text("Cases per 100K")
+
+
+        // CREATE LEGEND // 
+        var svgLegend = svg.append('g')
+            .attr('class', 'gLegend')
+            .attr("transform", "translate(" + (width + 20) + "," + 0 + ")")
+
+        var legend = svgLegend.selectAll('.legend')
+          .data(category)
+          .enter().append('g')
+            .attr("class", "legend")
+            .attr("transform", function (d, i) {return "translate(0," + i * 20 + ")"})
+
+        legend.append("circle")
+            .attr("class", "legend-node")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", R)
+            .style("fill", d=>color(d))
+
+        legend.append("text")
+            .attr("class", "legend-text")
+            .attr("x", R*2)
+            .attr("y", R/2)
+            .style("fill", "#A9A9A9")
+            .style("font-size", 12)
+            .text(d=>d)
+
+        // line generator 
+        var line = d3.line()
+          .x(d => xScale(d.date))
+          .y(d => yScale(d.value))
+
+        renderChart(1) // inital chart render (set default to group_no 1 data)
+
+        // Update chart when radio button is selected
+        d3.selectAll(("input[name='group_no']")).on('change', function(){
+          updateChart(this.value)
+        })
+
+        function updateChart(group_no) {
+
+          var resNew = res.filter(d=>d.group_no == parseInt(group_no))
+
+          var res_nested = d3.nest()
+            .key(d=>d.state) // CHANGE1
+            .entries(resNew)
+
+          glines.select('.line') //select line path within line-group (which represents a vaccination status), then bind new data 
+            .data(res_nested)
+            .transition().duration(750)
+            .attr('d', function(d) {
+              return line(d.values)
             })
-            .style('font-size', 10)
-            .html(d => {
-              var xDate = xScale.invert(mouse[0])
-              var bisect = d3.bisector(function (d) { return d.date; }).left
-              var idx = bisect(d.values, xDate)
-              return d.key + " " + d.values[idx].value.toString() + " / million"
+
+          mouseG.selectAll('.mouse-per-line')
+            .data(res_nested)
+
+          mouseG.on('mousemove', function () { 
+              var mouse = d3.mouse(this)
+              updateTooltipContent(mouse, res_nested)
             })
         }
 
-      })
+        function renderChart(group_no) {
 
-      </script>
+          var resNew = res.filter(d=>d.group_no == parseInt(group_no))
+
+          var res_nested = d3.nest() // necessary to nest data so that keys represent each vaccination status
+            .key(d=>d.state) // CHANGE1
+            .entries(resNew)
+
+          // APPEND MULTIPLE LINES //
+          var lines = svg.append('g')
+            .attr('class', 'lines')
+
+          glines = lines.selectAll('.line-group')
+            .data(res_nested).enter()
+            .append('g')
+            .attr('class', 'line-group')
+
+          glines  
+            .append('path')
+              .attr('class', 'line')  
+              .attr('d', d => line(d.values))
+              .style('stroke', (d, i) => color(i))
+              .style('fill', 'none')
+              .style('opacity', lineOpacity)
+              .style('stroke-width', lineStroke)
+
+          // CREATE HOVER TOOLTIP WITH VERTICAL LINE //
+          tooltip = d3.select("#chart").append("div")
+            .attr('id', 'tooltip')
+            .style('position', 'absolute')
+            .style("background-color", "#D3D3D3")
+            .style('padding', 6)
+            .style('display', 'none')
+
+          mouseG = svg.append("g")
+            .attr("class", "mouse-over-effects");
+
+          mouseG.append("path") // create vertical line to follow mouse
+            .attr("class", "mouse-line")
+            .style("stroke", "#A9A9A9")
+            .style("stroke-width", lineStroke)
+            .style("opacity", "0");
+
+          var lines = document.getElementsByClassName('line');
+
+          var mousePerLine = mouseG.selectAll('.mouse-per-line')
+            .data(res_nested)
+            .enter()
+            .append("g")
+            .attr("class", "mouse-per-line");
+
+          mousePerLine.append("circle")
+            .attr("r", 4)
+            .style("stroke", function (d) {
+              return color(d.key)
+            })
+            .style("fill", "none")
+            .style("stroke-width", lineStroke)
+            .style("opacity", "0");
+
+          mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
+            .attr('width', width) 
+            .attr('height', height)
+            .attr('fill', 'none')
+            .attr('pointer-events', 'all')
+            .on('mouseout', function () { // on mouse out hide line, circles and text
+              d3.select(".mouse-line")
+                .style("opacity", "0");
+              d3.selectAll(".mouse-per-line circle")
+                .style("opacity", "0");
+              d3.selectAll(".mouse-per-line text")
+                .style("opacity", "0");
+              d3.selectAll("#tooltip")
+                .style('display', 'none')
+
+            })
+            .on('mouseover', function () { // on mouse in show line, circles and text
+              d3.select(".mouse-line")
+                .style("opacity", "1");
+              d3.selectAll(".mouse-per-line circle")
+                .style("opacity", "1");
+              d3.selectAll("#tooltip")
+                .style('display', 'block')
+            })
+            .on('mousemove', function () { // update tooltip content, line, circles and text when mouse moves
+              var mouse = d3.mouse(this)
+
+              d3.selectAll(".mouse-per-line")
+                .attr("transform", function (d, i) {
+                  var xDate = xScale.invert(mouse[0]) // use 'invert' to get date corresponding to distance from mouse position relative to svg
+                  var bisect = d3.bisector(function (d) { return d.date; }).left // retrieve row index of date on parsed csv
+                  var idx = bisect(d.values, xDate);
+
+                  d3.select(".mouse-line")
+                    .attr("d", function () {
+                      var data = "M" + xScale(d.values[idx].date) + "," + (height);
+                      data += " " + xScale(d.values[idx].date) + "," + 0;
+                      return data;
+                    });
+                  return "translate(" + xScale(d.values[idx].date) + "," + yScale(d.values[idx].value) + ")";
+
+                });
+
+              updateTooltipContent(mouse, res_nested)
+
+            })
+
+          }
+
+      function updateTooltipContent(mouse, res_nested) {
+
+        sortingObj = []
+        res_nested.map(d => {
+          var xDate = xScale.invert(mouse[0])
+          var bisect = d3.bisector(function (d) { return d.date; }).left
+          var idx = bisect(d.values, xDate)
+          sortingObj.push({key: d.values[idx].state, value: d.values[idx].value, group_no: d.values[idx].group_no, year: d.values[idx].date.getFullYear(), month: monthNames[d.values[idx].date.getMonth()]}) //CHANGE1
+        })
+
+        sortingObj.sort(function(x, y){
+           return d3.descending(x.value, y.value);
+        })
+
+        var sortingArr = sortingObj.map(d=> d.key)
+
+        var res_nested1 = res_nested.slice().sort(function(a, b){
+          return sortingArr.indexOf(a.key) - sortingArr.indexOf(b.key) // rank vaccination status by number of cases
+        })
+
+
+        // tooltip
+        tooltip.html("Cases by vaccination status ")
+          .style('display', 'block')
+          .style('left', d3.event.pageX + 20)
+          .style('top', d3.event.pageY - 20)
+          .style('font-size', 11.5)
+          .selectAll()
+          .data(res_nested1).enter() // for vaccination status, list cases per 100 thousand
+          .append('div')
+          .style('color', d => {
+            return color(d.key)
+          })
+          .style('font-size', 10)
+          .html(d => {
+            var xDate = xScale.invert(mouse[0])
+            var bisect = d3.bisector(function (d) { return d.date; }).left
+            var idx = bisect(d.values, xDate)
+            return d.key + " " + d.values[idx].value.toString() + " / million"
+          })
+
+      }
+
+    })
+
+    </script>
   </body>
 </html>

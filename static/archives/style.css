@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+
+:root {
+  --blue-ocean: #0077be;
+  --selected: #3bf573;
+  --selected-from: #25d8f7;
+  --selected-to: #f5ee33;
+  --point-fill: red;
+  --connection: red;
+  --connection-to: #1ab01f;
+  --connection-from: #29b0ff;
+  --tool-tip-back: rgba(0, 0, 0, 0.5);
+  --tool-tip-fore: rgba(255, 255, 255, 1);
+  --anim-transmission-line: dash 3s ease-in forwards infinite;
+}
+
+body {
+  margin: 0;
+  font-family: "Roboto Slab";
+  font-size: 10px;
+}
+
+#map_svg {
+  background-color: var(--blue-ocean);
+}
+
+#tooltip {
+  background-color: var(--tool-tip-back);
+  color: var(--tool-tip-fore);
+  position: absolute;
+  padding: 4px;
+  border-radius: 2px;
+}
+
+.city_path {
+  transition: 0.2s;
+  fill: #ffffff;
+  stroke: var(--blue-ocean);
+  stroke-width: 0.1px;
+}
+
+.city_path.active {
+  fill: #c0c0c0;
+}
+
+.city_path.selected {
+  fill: var(--selected);
+}
+
+.city_path.selected_to {
+  fill: var(--selected-to);
+}
+
+.city_path.selected_from {
+  fill: var(--selected-from);
+}
+
+.point {
+  fill: var(--point-fill);
+}
+
+.connection.child {
+  stroke: var(--connection-to);
+  stroke-width: 0.6px;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: var(--anim-transmission-line);
+  opacity: 1;
+}
+
+.connection.parent {
+  transition: 0.2s;
+  stroke: var(--connection-from);
+  stroke-width: 0.6px;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: var(--anim-transmission-line);
+  opacity: 1;
+}
+
+@keyframes dash {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.connection {
+  fill: none;
+  stroke: var(--connection);
+  stroke-width: 0.3px;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: var(--anim-transmission-line);
+}
+
+.hidden {
+  opacity: 0;
+}
+
+span.normal_text {
+  font-size: 16px;
+  margin: 0px 10px;
+}

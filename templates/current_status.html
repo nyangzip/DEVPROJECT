@@ -40,8 +40,8 @@
 <body>
     <div class='bg-dark w-100'>
         <h1 class='common_title'>
-          <span style='color: rgba(255,255,255,1)'>COVID-19</span>
-          <span style='color: rgba(255,230,153,1)'> Around Us</span>
+            <a href="{{ url_for('main') }}" style="text-decoration: none;"><span style='color: rgba(255,255,255,1)'>COVID-19</span></a>
+            <a href="{{ url_for('main') }}" style="text-decoration: none;"><span class="label label-danger" style='color: rgba(255,230,153,1);'> Around Us</span></a>
         </h1>
     </div>
     <div class="row">
@@ -51,7 +51,7 @@
                     <button class="btn btn-outline-secondary bg-secondary text-white" type="button" onclick="findAddr()">Find your address</button>
                 </div>
                 <div class='col'>
-                    <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="{{data}}"> 
+                    <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="{{alldata}}"> 
                     <!-- <input name='addname' id='addname' type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2" value="서울 서대문구 거북골로 3"> -->
                 </div>
                 <div class="input-group-append">
@@ -73,37 +73,51 @@
                 <a class="nav-link" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
             </li>
         </ul>
-        <div class="tab-content" id="myTabContent">
-            <!-- <div class="tabbable-panel"> -->
+        <div class="tab-content border pb-5" id="myTabContent">
             <div class="row w-100">
-                <div class="row">
-                    <div class="col-md-4 text-danger text-left display-6 align-middle">
-                        <span class="Covid_Confirm">{{value}}</span>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="row w-100">
-                            <span style="width: 100%;">Confirmed Cases</span>
-                            <span style="width: 100%;">In {{data}}</span>
+                <div class="col" style="width: 100%;">
+                    <div class="row border" style="width: 100%;">
+                        <div class="col-md-8">
+                            <div class="row w-100">
+                                <span style="width: 100%;">All confirmed Cases</span>
+                                <span style="width: 100%;">In {{city}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-danger text-left display-6 align-middle">
+                            <span class="Covid_Confirm">{{value}}</span>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row w-100">
+                                <span style="width: 100%;">All Deaths</span>
+                                <span style="width: 100%;">In {{city}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-danger text-left display-6 align-middle">
+                            <span class="Covid_Death">{{death}}</span>
                         </div>
                     </div>
-                    <div class="col-md-4 text-danger text-left display-6 align-middle">
-                        <span class="Covid_Death">{{death}}</span>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="row w-100">
-                            <span style="width: 100%;">Death</span>
-                            <span style="width: 100%;">In {{city}}</span>
+                    <div class="row border mt-4" style="width: 100%;">
+                        <div class="col-md-4 text-left display-6 align-middle">
+                            <p class="display-9 fw-bold pt-5 ps-3">Origin</p>
                         </div>
-                    </div>
-                    <div class="col">
-                        <br>
-                        <br>
-                        <p># Rank1</p>
-                        <p># Rank2</p>
-                        <p># Rank3</p>
+                        <div class="col-md-8 text-right pt-4 pe-5">
+                            <p class="text-end">1.Rank1</p>
+                            <p class="text-end">2.Rank2</p>
+                            <p class="text-end">3.Rank3</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row w-100">
+                                <span style="width: 100%;">Confirmed Cases</span>
+                                <span style="width: 100%;">In {{data}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-secondary display-6 pe-3">
+                            <span class="Covid_Confirm">{{value}}</span>
+                        </div>
+                        
                     </div>
                 </div>
-                <div class="col">
+                <div class="col border-left">
                 <!-- <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"> -->
                     <div id="map" style="width:100%;height:400px;"></div>
                     <!-- https://developers.kakao.com/console/app/666698/config/appKey -->
@@ -147,12 +161,13 @@
             </div>
             <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
             </div> -->
-            <div class="row pt-5" style="width: 100%; height: 400px;" id="my_dataviz">
+
+            <div class="row p-10" style="width: 100%; height: 400px;" id="my_dataviz">
                 <script>
 
                     // set the dimensions and margins of the graph
-                    const margin = {top: 10, right: 30, bottom: 90, left: 40},
-                        width = 800,
+                    const margin = {top: 30, right: 30, bottom: 90, left: 40},
+                        width = 700,
                         height = 450 - margin.top - margin.bottom;
                     
                     // append the svg object to the body of the page
@@ -165,8 +180,8 @@
                     var today = new Date();   
                     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
                     // Parse the Data
-                    // d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_"+date+".csv").then(function(data) {
-                    d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_2021-11-25.csv").then(function(data) {
+                    d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_"+date+".csv").then(function(data) {
+                    // d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_2021-11-25.csv").then(function(data) {
 
                     // X axis
                     const x = d3.scaleBand()
@@ -180,13 +195,27 @@
                         .attr("transform", "translate(-10,0)rotate(-45)")
                         .style("text-anchor", "end");
                     
+                    // const y = data.
+                    
                     // Add Y axis
                     const y = d3.scaleLinear()
-                      .domain([0, 600])
+                      .domain([0, "{{ maxvalue }}"])
                       .range([ height, 0]);
                     svg.append("g")
                       .call(d3.axisLeft(y));
                     
+                    // Bar chart title
+                    svg.append("text")
+                        .attr("x", x.bandwidth()+100)
+                        .attr("y", y.top)
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "25px")
+                        .text("Confirmed cases")
+                        // .attr("dy", "0.35em")
+                        .attr("fill", "#008B8B")
+                        .attr("stroke-width",5)
+                        .style("font-weight","bold");
+
                     // Bars
                     svg.selectAll("mybar")
                       .data(data)

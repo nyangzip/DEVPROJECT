@@ -1,9 +1,7 @@
-/* Nghia's part */
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');/* Nghia's part */
 
 :root {
-  /* --blue-ocean: #0077be; */
-  /* --blue-ocean: Black; */
-  /* --blue-ocean: #ffffff; */
+  --blue-ocean: #59c5ff; 
   --selected: #3bf573;
   --selected-from: #25d8f7;
   --selected-to: #f5ee33;
@@ -11,13 +9,23 @@
   --connection: red;
   --connection-to: #1ab01f;
   --connection-from: #29b0ff;
+  --tool-tip-back: rgba(0, 0, 0, 0.5);
+  --tool-tip-fore: rgba(255, 255, 255, 1);
   --anim-transmission-line: dash 5s ease-in forwards infinite;
 }
 
 #map_svg {
-  /* background-color: var(--blue-ocean); */
-  background-color: white;
+   background-color: var(--blue-ocean); 
+  /*background-color: white;*/
   outline: solid black;
+}
+
+#tooltip {
+  background-color: var(--tool-tip-back);
+  color: var(--tool-tip-fore);
+  position: absolute;
+  padding: 4px;
+  border-radius: 2px;
 }
 
 .city_path {
@@ -29,7 +37,7 @@
 
   /* Jongmin's part */
   stroke: black;
-  stroke-width: 0.5px;
+  stroke-width: 0.3px;
 }
 
 .city_path.active {
@@ -54,7 +62,7 @@
 
 .connection.child {
   stroke: var(--connection-to);
-  stroke-width: 0.6px;
+  stroke-width: 0.8px;
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
   animation: var(--anim-transmission-line);
@@ -62,9 +70,8 @@
 }
 
 .connection.parent {
-  transition: 0.2s;
   stroke: var(--connection-from);
-  stroke-width: 0.6px;
+  stroke-width: 0.8px;
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
   animation: var(--anim-transmission-line);
@@ -83,7 +90,7 @@
 .connection {
   fill: none;
   stroke: var(--connection);
-  stroke-width: 0.3px;
+  stroke-width: 0.6px;
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
   animation: var(--anim-transmission-line);
@@ -91,4 +98,9 @@
 
 .hidden {
   opacity: 0;
+}
+
+span.normal_text {
+  font-size: 16px;
+  margin: 0px 10px;
 }
