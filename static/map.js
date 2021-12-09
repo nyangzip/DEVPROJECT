@@ -10,7 +10,7 @@ var connection_to_prefix = "to";
 
 var map_json = "/static/korea_map_readable.json";
 var transmission_json = "/static/transmission.json";
-var sf = 150;
+var sf = 100;
 var t_lati =  32.0, b_lati =  39.5;
 var l_long = 124.8, r_long = 131.0;
 
@@ -29,47 +29,46 @@ var projection = d3.geoMercator()
 var path = d3.geoPath()
   .projection(projection);
 
-d3.select("#main_viz")
-  .attr("width", width)
-  .attr("height", height);
-
 // HTML element
-var svg = d3.select("#main_viz").append("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .attr("viewBox", "0 0 " + width + " " + height)
-  .attr("id", "map_svg");
-
-// HTML element
-d3.select("header").append("span")
-  .attr("class", "normal_text")
-  .text("From");
-
-d3.select("header").append("input")
-  .attr("type", "date")
-  .attr("id", "input_date_s")
-  .attr("value", "2020-01-01")
-  // .range([width, 10])
+d3.select("#input_date_s")
   .on("change", function() {
     date_s = int_date(d3.select(this).node().value);
     update_transmission();
   });
 
 // HTML element
-d3.select("header").append("span")
-  .attr("class", "normal_text")
-  .text("To");
-
-// HTML element
-d3.select("header").append("input")
-  .attr("type", "date")
-  .attr("id", "input_date_e")
-  .attr("value", "2020-03-30")
+d3.select("#input_date_e")
   .on("change", function() {
     date_e = int_date(d3.select(this).node().value);
     update_transmission();
   });
 
+d3.select("#main_viz")
+  .attr("width", width)
+  .attr("height", height);
+
+function animateViewBox() {
+  let moveTo = this.getAttribute("data-view");
+  gsap.to(demo, {
+    duration: 1,
+    attr: { viewBox: moveTo },
+    ease: "power3.inOut"
+  });
+}
+
+var svg = d3.select("#main_viz").append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .attr("viewBox", "0 0 " + width + " " + height)
+  .attr("id", "map_svg")
+  .on("contextmenu", function() {
+    d3.event.preventDefault();
+    var [x, y] = d3.mouse(this);
+    svg.transition().duration(100).attr("viewBox", (x-width/4) + " " + (y-height/4) + " " + width/2 + " " + height/2);
+  })
+  .on("dblclick", function() {
+    svg.transition().duration(100).attr("viewBox", 0 + " " + 0 + " " + width + " " + height);
+  });
 d3.select("header").append("div")
   .attr("id", "tooltip")
   .text("")
@@ -114,6 +113,14 @@ function get_region_center_offset(region_code) {
   return [parseFloat(dx), parseFloat(dy)];
 }
 
+function reset_selection() {
+  d3.selectAll(".selected").classed("selected", false);
+  d3.selectAll(".selected_to").classed("selected_to", false);
+  d3.selectAll(".selected_from").classed("selected_from", false);
+  d3.selectAll(".child").classed("child", false);
+  d3.selectAll(".parent").classed("parent", false);
+}
+
 function parse_transmission(error, raw_patients) {
   var region_patient_count = {};
   var region_connection = [];
@@ -147,9 +154,7 @@ function parse_transmission(error, raw_patients) {
   region_connection = region_connection.filter((v, i, a) => a.indexOf(v) === i);
 
   //new thing; needs to turn off selection here
-  d3.selectAll(".selected").classed("selected", false);
-  d3.selectAll(".selected_to").classed("selected_to", false);
-  d3.selectAll(".selected_from").classed("selected_from", false);
+  reset_selection()
   //new thing; needs to turn off selection here
 
   svg.selectAll(".point").remove();
@@ -223,11 +228,7 @@ function draw_map(error, regions) {
       var x = d3.select(this).classed("selected")
       d3.selectAll(".connection").classed("hidden", true); //hide all first; check if it is selection turning off, show them back
       if (!x) { //maybe other is on, need to turn it off first
-        d3.selectAll(".selected").classed("selected", false);
-        d3.selectAll(".selected_to").classed("selected_to", false);
-        d3.selectAll(".selected_from").classed("selected_from", false);
-        d3.selectAll(".child").classed("child", false);
-        d3.selectAll(".parent").classed("parent", false);
+        reset_selection()
       } else { //turning off selection obviously
         d3.selectAll(".connection").classed("hidden", false); //show them back as promised
       }
@@ -280,7 +281,7 @@ show_map();
         (doc && doc.clientTop  || body && body.clientTop  || 0 );
     }
     d3.select("#tooltip")
-      .style("left", event.pageX + 20 + "px")
-      .style("top", event.pageY + 20 + "px")
+      .style("left", event.pageX + 10 + "px")
+      .style("top", event.pageY + 20 + "px");
   }
 })();

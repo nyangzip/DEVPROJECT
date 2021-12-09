@@ -120,7 +120,7 @@
           <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('transmission') }}" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="true">Why vaccine?</a>
+          <a class="nav-link active" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="true">Why vaccinate?</a>
         </li>
       </ul>
       <div class="tab-content" id="myTabContent">
@@ -531,7 +531,7 @@
             var xDate = xScale.invert(mouse[0])
             var bisect = d3.bisector(function (d) { return d.date; }).left
             var idx = bisect(d.values, xDate)
-            return d.key + " " + d.values[idx].value.toString() + " / million"
+            return d.key + " " + d.values[idx].value.toString() + " / 100K"
           })
 
       }

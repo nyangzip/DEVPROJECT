@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');/* Nghia's part */
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
 
 :root {
   --blue-ocean: #59c5ff; 
@@ -15,8 +15,7 @@
 }
 
 #map_svg {
-   background-color: var(--blue-ocean); 
-  /*background-color: white;*/
+  background-color: var(--blue-ocean); 
   outline: solid black;
 }
 
@@ -31,11 +30,6 @@
 .city_path {
   transition: 0.2s;
   fill: #ffffff;
-  /* Ngniah's part */
-  /* stroke: var(--blue-ocean);
-  stroke-width: 0.1px; */
-
-  /* Jongmin's part */
   stroke: black;
   stroke-width: 0.3px;
 }

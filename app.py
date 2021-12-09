@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, Response
 # import csv
 import datetime
 from flask.helpers import url_for
 import numpy as np
 import os
+import json
 # export FLASK_ENV=development
 # set FLASK_APP = app.py
 # flask run -p 5500 (kakaomap api를 실행시키기 위해서 등록한 port를 이용해야하기 때문)
@@ -13,6 +14,23 @@ import requests,xmltodict
 import pandas as pd
 
 app = Flask(__name__)
+
+import update_COVID_DB ######## 이거를 추가
+import os
+
+
+##### 오전 11시를 지나지 않았으면 전날 꺼 받아오기
+today_now = datetime.datetime.now()
+if datetime.datetime.now().hour < 11:
+    today_now = datetime.datetime.now() - datetime.timedelta(days=1)
+else: 
+    pass
+yyyy = today_now.year; mm = today_now.month; dd = today_now.day
+yyyy_str = str(yyyy); mm_str = str(mm).zfill(2); dd_str = str(dd).zfill(2)
+
+##### 오전 11시 지났는데 파일이 만들어져있지 않으면 새로 업데이트하기
+if os.path.isfile(f'static/archives/{yyyy_str}{mm_str}{dd_str}.json') == True: pass
+else: update_COVID_DB.make_30_days_records(yyyy,mm,dd)
 
 @app.route('/')
 def main():
@@ -31,82 +49,43 @@ def address():
     print(data.split())
     regions = ['서울', '인천', '대전', '광주', '대구', '울산', '부산']
     if data.split()[0] in regions:
-    # Check datafile
+      # pddata = pd.read_csv('https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_col='date')
+      pddata = json.load(open('./static/archives/'+datetime.datetime.today().strftime('%Y%m%d')+'.json'))
+      paramcsv = pd.DataFrame({'date':pddata['date'],'confirmed':pddata[' '.join(data.split()[:2])]['confirmedNumber']}).sort_values(by='date')
+      paramcsv['confirmedsum'] = paramcsv['confirmed'].cumsum().astype(float)
+      # paramcsv.pop('confirmed')
+      # paramcsv.rename(columns={'confirmedsum':'confirmed'},inplace=True)
+      paramcsv.to_csv('paramdata.csv',index=False) # Date , Confirmed
+      # value = sum(pddata[' '.join(data.split()[:2])]['confirmedNumber'])
+      maxvalue = max(pddata[' '.join(data.split()[:2])]['confirmedNumber'])
+      SUMvalue = sum(pddata[data.split()[0]]['confirmedNumber']) # by city
+      sumvalue = sum(pddata[' '.join(data.split()[:2])]['confirmedNumber']) # by Gu
+      death = sum(pddata[' '.join(data.split()[:2])]['deathNumber'])
       try:
-        pddata = pd.read_csv('https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_col='date')
+        rank1 = pddata[' '.join(data.split()[:2])]['origin'][0]
       except:
-        # Connecting data district with local index need
-        confirmed = []
-        date_data = []
-        for ii in range(30):
-            date='.'.join(str(datetime.date.today() - datetime.timedelta(days=ii+1)).split('-'))+'.00'
-            date_index = '.'.join(str(datetime.date.today() - datetime.timedelta(days=ii+1)).split('-'))
-            serviceurl = 'http://openAPI.seoul.go.kr:8088/5343646e4762616b3637774c504971/xml/TbCorona19CountStatusJCG/1/100/' + date
-            resp = requests.get(serviceurl)
-            coronadist = xmltodict.parse(resp.content)
-            try:
-                a=coronadist['TbCorona19CountStatusJCG']['row']
-                confirmed.append(int(a['SDMADD']))
-                date_data.append(date_index)
-            except:
-                confirmed.append(np.nan)
-                date_data.append(date_index)
-        pddata=pd.DataFrame({'confirmed':confirmed},index=date_data).sort_index(ascending=True)
-        pddata.confirmed = pddata.confirmed.fillna(0).cumsum()
-        pddata.to_csv('TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_label='date')
+        rank1 = ' '
+      try:        
+        rank2 = pddata[' '.join(data.split()[:2])]['origin'][1]
+      except:
+        rank2 = ' '
       try:
-        deathdata = pd.read_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
+        rank3 = pddata[' '.join(data.split()[:2])]['origin'][2]
       except:
-        serviceurl = 'http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19SidoInfStateJson?serviceKey=2t52ye5eVy%2FenbN2RzxWVtkLSp1k44J3m4PQslsjH1TA3WIEs1vyOlwcLv5TrlVL15QxJlfjwzNp77l8114wOA%3D%3D'
-        params ={'pageNo' : '1',
-        'numOfRows' : '10',
-        'startCreateDt' : ''.join(str(datetime.date.today() - datetime.timedelta(days=30)).split('-')),
-        'endCreateDt' : ''.join(str(datetime.date.today()).split('-')) }
-        resp = requests.get(serviceurl,params=params)
-        dictdata = xmltodict.parse(resp.content)
-        deathdata=pd.DataFrame(dictdata['response']['body']['items']['item'])
-        deathdata.to_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
-      value = pddata.confirmed[-1]
-      death = list(deathdata[deathdata['gubun']==data.split()[0]]['deathCnt'])[0]
-      return render_template('current_status.html',data=' '.join(data.split()[:2]),value=int(value),death=int(death),city=data.split()[0],maxvalue=int(max(pddata['confirmed'])),alldata = data)
+        rank3 = ' '
+      return render_template('current_status.html',data=' '.join(data.split()[:2]),value=int(sumvalue),death=int(death),city=data.split()[0],rank1=rank1,rank2=rank2,rank3=rank3,alldata = data, maxvalue= maxvalue, SUMvalue = SUMvalue)
     else :
-      try:
-        pddata = pd.read_csv('https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_col='date')
-      except:
-        # Connecting data district with local index need
-        confirmed = []
-        date_data = []
-        for ii in range(30):
-            date='.'.join(str(datetime.date.today() - datetime.timedelta(days=ii+1)).split('-'))+'.00'
-            date_index = '.'.join(str(datetime.date.today() - datetime.timedelta(days=ii+1)).split('-'))
-            serviceurl = 'http://openAPI.seoul.go.kr:8088/5343646e4762616b3637774c504971/xml/TbCorona19CountStatusJCG/1/100/' + date
-            resp = requests.get(serviceurl)
-            coronadist = xmltodict.parse(resp.content)
-            try:
-                a=coronadist['TbCorona19CountStatusJCG']['row']
-                confirmed.append(int(a['SDMADD']))
-                date_data.append(date_index)
-            except:
-                confirmed.append(np.nan)
-                date_data.append(date_index)
-        pddata=pd.DataFrame({'confirmed':confirmed},index=date_data).sort_index(ascending=True)
-        pddata.confirmed = pddata.confirmed.fillna(0).cumsum()
-        pddata.to_csv('TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_label='date')
-      try:
-        deathdata = pd.read_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
-      except:
-        serviceurl = 'http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19SidoInfStateJson?serviceKey=2t52ye5eVy%2FenbN2RzxWVtkLSp1k44J3m4PQslsjH1TA3WIEs1vyOlwcLv5TrlVL15QxJlfjwzNp77l8114wOA%3D%3D'
-        params ={'pageNo' : '1',
-        'numOfRows' : '10',
-        'startCreateDt' : ''.join(str(datetime.date.today() - datetime.timedelta(days=30)).split('-')),
-        'endCreateDt' : ''.join(str(datetime.date.today()).split('-')) }
-        resp = requests.get(serviceurl,params=params)
-        dictdata = xmltodict.parse(resp.content)
-        deathdata=pd.DataFrame(dictdata['response']['body']['items']['item'])
-        deathdata.to_csv('deathdata'+''.join(str(datetime.date.today()).split('-'))+'.csv')
-      value = pddata.confirmed[-1]
-      death = list(deathdata[deathdata['gubun']==data.split()[0]]['deathCnt'])[0]
-      return render_template('current_status_not.html',data=' '.join(data.split()[:2]),value=int(value),death=int(death),city=data.split()[0],maxvalue=int(max(pddata['confirmed'])),alldata = data)      
+      pddata = json.load(open('./static/archives/'+datetime.datetime.today().strftime('%Y%m%d')+'.json'))
+      paramcsv = pd.DataFrame({'date':pddata['date'],'confirmed':pddata[data.split()[0]]['confirmedNumber']}).sort_values(by='date')
+      paramcsv['confirmedsum'] = paramcsv['confirmed'].cumsum().astype(float)
+      # paramcsv.pop('confirmed')
+      # paramcsv.rename(columns={'confirmedsum':'confirmed'},inplace=True)
+      paramcsv.to_csv('paramdata.csv',index=False) # Date , Confirmed
+      # value = sum(pddata[' '.join(data.split()[:2])]['confirmedNumber'])
+      maxvalue = max(pddata[data.split()[0]]['confirmedNumber'])
+      SUMvalue = sum(pddata[data.split()[0]]['confirmedNumber']) # by city
+      death = sum(pddata[data.split()[0]]['deathNumber'])
+      return render_template('current_status_not.html',data=' '.join(data.split()[:2]),value=int(SUMvalue),death=int(death),city=data.split()[0],maxvalue= maxvalue,alldata = data)      
   elif request.method == 'GET':
     data = {}
     print(data)
@@ -130,6 +109,16 @@ def WhyVaccine():
 @app.route('/<usr>')
 def user(usr):
   return f'<h1>{usr}</h1>'
+
+@app.route('/param.csv')
+def output_dataframe_csv():
+  with open('paramdata.csv','r') as p:
+    open_read = p.readlines()
+  page =''
+  for ii in open_read:
+    page += ii
+  # a= pd.read_csv('paramdata.csv')
+  return page
 
 if __name__ == '__main__':
   app.run(debug=True)

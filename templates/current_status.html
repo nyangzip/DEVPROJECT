@@ -70,7 +70,7 @@
                 <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('transmission') }}" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="false">Why vaccinate?</a>
             </li>
         </ul>
         <div class="tab-content border pb-5" id="myTabContent">
@@ -79,16 +79,16 @@
                     <div class="row border" style="width: 100%;">
                         <div class="col-md-8">
                             <div class="row w-100">
-                                <span style="width: 100%;">All confirmed Cases</span>
+                                <span style="width: 100%;">Confirmed Cases (30 days)</span>
                                 <span style="width: 100%;">In {{city}}</span>
                             </div>
                         </div>
                         <div class="col-md-4 text-danger text-left display-6 align-middle">
-                            <span class="Covid_Confirm">{{value}}</span>
+                            <span class="Covid_Confirm">{{SUMvalue}}</span>
                         </div>
                         <div class="col-md-8">
                             <div class="row w-100">
-                                <span style="width: 100%;">All Deaths</span>
+                                <span style="width: 100%;">Deaths (30 days)</span>
                                 <span style="width: 100%;">In {{city}}</span>
                             </div>
                         </div>
@@ -100,14 +100,14 @@
                         <div class="col-md-4 text-left display-6 align-middle">
                             <p class="display-9 fw-bold pt-5 ps-3">Origin</p>
                         </div>
-                        <div class="col-md-8 text-right pt-4 pe-5">
-                            <p class="text-end">1.Rank1</p>
-                            <p class="text-end">2.Rank2</p>
-                            <p class="text-end">3.Rank3</p>
+                        <div class="col-md-8 text-right pt-4 display-7">
+                            <p class="text-end" style="width: 100%;">#1 {{ rank1 }}</p>
+                            <p class="text-end" style="width: 100%;">#2 {{ rank2 }}</p>
+                            <p class="text-end" style="width: 100%;">#3 {{ rank3 }}</p>
                         </div>
                         <div class="col-md-8">
                             <div class="row w-100">
-                                <span style="width: 100%;">Confirmed Cases</span>
+                                <span style="width: 100%;">Confirmed Cases (30 days)</span>
                                 <span style="width: 100%;">In {{data}}</span>
                             </div>
                         </div>
@@ -118,68 +118,69 @@
                     </div>
                 </div>
                 <div class="col border-left">
-                <!-- <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"> -->
-                    <div id="map" style="width:100%;height:400px;"></div>
-                    <!-- https://developers.kakao.com/console/app/666698/config/appKey -->
-                    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a9fbb61ef0264a144b9ff5e1255f887e&libraries=services"></script>
-                    <script>
-                        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-                            mapOption = {
-                                center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                                level: 7 // 지도의 확대 레벨
-                            };  
-                        // 지도를 생성합니다    
-                        var map = new kakao.maps.Map(mapContainer, mapOption); 
-
-                        // 주소-좌표 변환 객체를 생성합니다
-                        var geocoder = new window.kakao.maps.services.Geocoder();
-
-                        // 주소로 좌표를 검색합니다
-                        geocoder.addressSearch(document.getElementById('addname').value, function(result, status) {
-
-                            // 정상적으로 검색이 완료됐으면 
-                            if (status === kakao.maps.services.Status.OK) {
-                                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                                // 결과값으로 받은 위치를 마커로 표시합니다
-                                var marker = new kakao.maps.Marker({
-                                    map: map,
-                                    position: coords
-                                });
-                                // 인포윈도우로 장소에 대한 설명을 표시합니다
-                                var infowindow = new kakao.maps.InfoWindow({
-                                    content: '<div style="width:150px;text-align:center;padding:6px 0;">Your address</div>'
-                                });
-                                infowindow.open(map, marker);
-                                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                                map.setCenter(coords);
-                            } 
-                        });    
-                    </script>
+                    <!-- <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"> -->
+                        <div id="map" style="width:100%;height:400px;"></div>
+                        <!-- https://developers.kakao.com/console/app/666698/config/appKey -->
+                        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a9fbb61ef0264a144b9ff5e1255f887e&libraries=services"></script>
+                        <script>
+                            var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+                                mapOption = {
+                                    center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                                    level: 7 // 지도의 확대 레벨
+                                };  
+                            // 지도를 생성합니다    
+                            var map = new kakao.maps.Map(mapContainer, mapOption); 
+    
+                            // 주소-좌표 변환 객체를 생성합니다
+                            var geocoder = new window.kakao.maps.services.Geocoder();
+    
+                            // 주소로 좌표를 검색합니다
+                            geocoder.addressSearch(document.getElementById('addname').value, function(result, status) {
+    
+                                // 정상적으로 검색이 완료됐으면 
+                                if (status === kakao.maps.services.Status.OK) {
+                                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                                    // 결과값으로 받은 위치를 마커로 표시합니다
+                                    var marker = new kakao.maps.Marker({
+                                        map: map,
+                                        position: coords
+                                    });
+                                    // 인포윈도우로 장소에 대한 설명을 표시합니다
+                                    var infowindow = new kakao.maps.InfoWindow({
+                                        content: '<div style="width:150px;text-align:center;padding:6px 0;">Your address</div>'
+                                    });
+                                    infowindow.open(map, marker);
+                                    // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                                    map.setCenter(coords);
+                                } 
+                            });    
+                        </script>
+                    </div>
                 </div>
-            </div>
-            <!-- <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            </div>
-            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            </div> -->
+                <!-- <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                </div>
+                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                </div> -->
+    
+                <div class="row p-10" style="width: 100%; height: 400px;" id="my_dataviz">
+                    <script>
 
-            <div class="row p-10" style="width: 100%; height: 400px;" id="my_dataviz">
-                <script>
-                    // set the dimensions and margins of the graph
-                    const margin = {top: 30, right: 30, bottom: 90, left: 40},
-                        width = 800,
-                        height = 450 - margin.top - margin.bottom;
-                    
-                    // append the svg object to the body of the page
-                    const svg = d3.select("#my_dataviz")
-                      .append("svg")
-                        .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
-                      .append("g")
-                        .attr("transform", `translate(${margin.left},${margin.top})`);
-                    var today = new Date();   
-                    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                    // Parse the Data
-                    d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_"+date+".csv").then(function(data) {
+                        // set the dimensions and margins of the graph
+                        const margin = {top: 30, right: 30, bottom: 90, left: 40},
+                            width = 800,
+                            height = 450 - margin.top - margin.bottom;
+                        
+                        // append the svg object to the body of the page
+                        const svg = d3.select("#my_dataviz")
+                          .append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                          .append("g")
+                            .attr("transform", `translate(${margin.left},${margin.top})`);
+                        var today = new Date();   
+                        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                        // Parse the Data
+                        d3.csv('http://127.0.0.1:5500/param.csv').then(function(data) {
                     // d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_2021-11-25.csv").then(function(data) {
 
                     // X axis
@@ -206,10 +207,10 @@
                     // Bar chart title
                     svg.append("text")
                         .attr("x", x.bandwidth()+100)
-                        .attr("y", y.top)
+                        .attr("y", -10)
                         .attr("text-anchor", "middle")
                         .style("font-size", "25px")
-                        .text("Confirmed cases")
+                        .text("Confirmed cases (By Gu)")
                         // .attr("dy", "0.35em")
                         .attr("fill", "#008B8B")
                         .attr("stroke-width",5)
@@ -235,11 +236,7 @@
                       .delay((d,i) => {console.log(i); return i*100})
                     
                     })
-                    
-                </script>
-                    
-                </script>
-
+                    </script>
             </div>
         </div> 
     </header>

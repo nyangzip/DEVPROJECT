@@ -43,11 +43,11 @@ name_Kor,name_Eng
 대전 중구,Daejeon Jung-gu
 대전 동구,Daejeon Dong-gu
 광주,Gwangju
-광주 광산구 ,Gwangju Gwangsan-gu
+광주 광산구,Gwangju Gwangsan-gu
 광주 북구,Gwangju Buk-gu
 광주 서구,Gwangju Seo-gu
 광주 남구,Gwangju Nam-gu
-광주 중구,Gwangju Jung-gu
+광주 동구,Gwangju Dong-gu
 대구,Daegu
 대구 북구,Daegu Buk-gu
 대구 동구,Daegu Dong-gu
@@ -61,6 +61,7 @@ name_Kor,name_Eng
 울산 중구,Ulsan Jung-gu
 울산 남구,Ulsan Nam-gu
 울산 동구,Ulsan Dong-gu
+울산 북구,Ulsan Buk-gu
 울산 울주군,Ulsan Ulju-gun
 부산,Busan
 부산 강서구,Busan Gangseo-gu

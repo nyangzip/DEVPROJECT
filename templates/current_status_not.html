@@ -70,7 +70,7 @@
                 <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('transmission') }}" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="false">Why vaccine?</a>
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="false">Why vaccinate?</a>
             </li>
         </ul>
         <div class="tab-content border pb-5" id="myTabContent">
@@ -79,7 +79,7 @@
                     <div class="row border" style="width: 100%;">
                         <div class="col-md-8">
                             <div class="row w-100">
-                                <span style="width: 100%;">All confirmed Cases</span>
+                                <span style="width: 100%;">Confirmed Cases (30 days)</span>
                                 <span style="width: 100%;">In {{city}}</span>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                         </div>
                         <div class="col-md-8">
                             <div class="row w-100">
-                                <span style="width: 100%;">All Deaths</span>
+                                <span style="width: 100%;">Deaths (30 days)</span>
                                 <span style="width: 100%;">In {{city}}</span>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
                     </div>
                     <div class="row border mt-5" style="width: 100%;">
                         <div class="col-md-12 text-center display-6 align-middle">
-                            <p class="display-9 fw-bold pt-1 ps-3">No available</p>
+                            <p class="display-9 fw-bold pt-1 ps-3">-</p>
                         </div>                     
                     </div>
                 </div>
@@ -152,7 +152,7 @@
 
                     // set the dimensions and margins of the graph
                     const margin = {top: 30, right: 30, bottom: 90, left: 40},
-                        width = 700,
+                        width = 800,
                         height = 450 - margin.top - margin.bottom;
                     
                     // append the svg object to the body of the page
@@ -165,7 +165,7 @@
                     var today = new Date();   
                     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
                     // Parse the Data
-                    d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_"+date+".csv").then(function(data) {
+                    d3.csv("http://127.0.0.1:5500/param.csv").then(function(data) {
                     // d3.csv("https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_2021-11-25.csv").then(function(data) {
 
                     // X axis
@@ -192,10 +192,10 @@
                     // Bar chart title
                     svg.append("text")
                         .attr("x", x.bandwidth()+100)
-                        .attr("y", y.top)
+                        .attr("y", -10)
                         .attr("text-anchor", "middle")
                         .style("font-size", "25px")
-                        .text("Confirmed cases")
+                        .text("Confirmed cases (By City)")
                         // .attr("dy", "0.35em")
                         .attr("fill", "#008B8B")
                         .attr("stroke-width",5)
@@ -221,9 +221,6 @@
                       .delay((d,i) => {console.log(i); return i*100})
                     
                     })
-                    
-                </script>
-                    
                 </script>
 
             </div>

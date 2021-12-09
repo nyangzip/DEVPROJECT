@@ -120,7 +120,7 @@
           <a class="nav-link" id="profile-tab" data-toggle="tab" href="{{ url_for('transmission') }}" role="tab" aria-controls="profile" aria-selected="false">Transmission Path</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="true">Why vaccine?</a>
+          <a class="nav-link active" id="contact-tab" data-toggle="tab" href="{{ url_for('WhyVaccine') }}" role="tab" aria-controls="contact" aria-selected="true">Why vaccinate?</a>
         </li>
       </ul>
       <div class="tab-content" id="myTabContent">
@@ -130,7 +130,6 @@
           <div class='header'>
             <h3>US COVID-19 7-Day Case Rates per 100,000</h3>
             <p>By vaccination status for five different age groups</p>
-            <p>Data source: CDC COVID Data Tracker.</p> 
             <div class="form-check-inline">
               <label class="form-check-label">
                 <input style="display: inline" type="radio" name="group_no" value="1" checked>Age group 18-29
@@ -242,7 +241,7 @@
           .append('text')
             .style("fill", "#A9A9A9")
             .style("font-size", 12)
-            .attr('x', 5)
+            .attr('x', 10)
             .attr("y", 20)
             .attr("fill", "#A9A9A9")
             .text("Week 15")
@@ -252,7 +251,7 @@
           .append('text')
             .style("fill", "#A9A9A9")
             .style("font-size", 12)
-            .attr('x', 150)
+            .attr('x', 190)
             .attr("y", 20)
             .attr("fill", "#A9A9A9")
             .text("Week 20")
@@ -262,7 +261,7 @@
           .append('text')
             .style("fill", "#A9A9A9")
             .style("font-size", 12)
-            .attr('x', 295)
+            .attr('x', 370)
             .attr("y", 20)
             .attr("fill", "#A9A9A9")
             .text("Week 25")
@@ -272,7 +271,7 @@
           .append('text')
             .style("fill", "#A9A9A9")
             .style("font-size", 12)
-            .attr('x', 440)
+            .attr('x', 550)
             .attr("y", 20)
             .attr("fill", "#A9A9A9")
             .text("Week 30")
@@ -282,7 +281,7 @@
           .append('text')
             .style("fill", "#A9A9A9")
             .style("font-size", 12)
-            .attr('x', 585)
+            .attr('x', 730)
             .attr("y", 20)
             .attr("fill", "#A9A9A9")
             .text("Week 35")
@@ -292,10 +291,11 @@
           .append('text')
             .style("fill", "#A9A9A9")
             .style("font-size", 12)
-            .attr('x', 701)
+            .attr('x', 866)
             .attr("y", 20)
             .attr("fill", "#A9A9A9")
             .text("Week 39")
+
 
 
         svg.append("g")
@@ -320,6 +320,15 @@
             .attr("y", -15)
             .attr("fill", "#A9A9A9")
             .text("Cases per 100K")
+
+
+        svg.append("g")
+          .attr("class", "y axis")
+          .append('text')
+            .attr('x', 840)
+            .attr("y", -15)
+            .attr("fill", "#A9A9A9")
+            .text("2021")        
 
 
         // CREATE LEGEND // 
@@ -531,7 +540,7 @@
             var xDate = xScale.invert(mouse[0])
             var bisect = d3.bisector(function (d) { return d.date; }).left
             var idx = bisect(d.values, xDate)
-            return d.key + " " + d.values[idx].value.toString() + " / million"
+            return d.key + " " + d.values[idx].value.toString() + " / 100.000"
           })
 
       }
@@ -539,5 +548,10 @@
     })
 
     </script>
+  <br>
+  <p>In this graph the the number of cases per capita by age group and vaccination status are shown.
+     By showing the number of cases per capita, it is apparent that in the unvaccinated group, more cases of COVID19 are confirmed per person.
+ </p>
+ <p>(Data source: CDC COVID Data Tracker) </p>
   </body>
 </html>
