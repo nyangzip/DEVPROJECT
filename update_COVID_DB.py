@@ -70,7 +70,7 @@ def dataUpdate_busan():
 
     url_busan = 'https://www.busan.go.kr/covid19/JsonCourse.do?lastIndex=2000'
     req_busan = urllib.request.Request(url_busan)
-    response_busan = urllib.request.urlopen(req_busan).read().decode('utf-8')
+    response_busan = urllib.request.urlopen(req_busan).read().decode('euc-kr')
     
     retData_busan = json.loads(response_busan)
     
@@ -275,10 +275,10 @@ def make_30_days_records(yyyy,mm,dd):
         day_30_list_label = [dt.datetime.strftime(dt.datetime(yyyy,mm,dd)-dt.timedelta(days=int(ii)), '%Y.%m.%d') for ii in np.arange(1,31)]
         
         ###
-        updated_by_SGG = {'Seoul': dataUpdate_seoul(), 'Busan': dataUpdate_busan(),
-                          'Daegu': dataUpdate_daegu(), 'Incheon': dataUpdate_incheon(),
-                          'Gwangju': dataUpdate_gwangju(),'Daejeon': dataUpdate_daejeon(),
-                          'Ulsan': dataUpdate_ulsan()}
+        updated_by_SGG = {'Seoul': dataUpdate_seoul(), 
+                          'Daegu': dataUpdate_daegu(),
+                          'Gwangju': dataUpdate_gwangju(),
+                          'Ulsan': dataUpdate_ulsan()} # , 'Incheon': dataUpdate_incheon(),'Daejeon': dataUpdate_daejeon(),'Busan': dataUpdate_busan(),
         
         ###
         day_30_list_c = [dt.datetime.strftime(dt.datetime(yyyy,mm,dd)-dt.timedelta(days=int(ii)), '%Y-%m-%d') for ii in np.arange(0,31)]

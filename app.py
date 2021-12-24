@@ -10,6 +10,7 @@ import json
 # flask run -p 5500 (kakaomap api를 실행시키기 위해서 등록한 port를 이용해야하기 때문)
 
 import requests,xmltodict
+
 # import urllib.parse
 import pandas as pd
 
@@ -50,7 +51,7 @@ def address():
     regions = ['서울', '인천', '대전', '광주', '대구', '울산', '부산']
     if data.split()[0] in regions:
       # pddata = pd.read_csv('https://raw.githubusercontent.com/nyangzip/DEVPROJECT/master/TbCorona19CountStatusJCG_'+str(datetime.date.today().strftime('%Y-%m-%-d'))+'.csv',index=True,index_col='date')
-      pddata = json.load(open('./static/archives/'+datetime.datetime.today().strftime('%Y%m%d')+'.json'))
+      pddata = json.load(open('./static/archives/'+yyyy_str+mm_str+dd_str+'.json'))
       paramcsv = pd.DataFrame({'date':pddata['date'],'confirmed':pddata[' '.join(data.split()[:2])]['confirmedNumber']}).sort_values(by='date')
       paramcsv['confirmedsum'] = paramcsv['confirmed'].cumsum().astype(float)
       # paramcsv.pop('confirmed')
