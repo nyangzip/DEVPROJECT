@@ -107,9 +107,13 @@ def WhyVaccine():
   return render_template('WhyVaccine.html')
 
 
-@app.route('/<usr>')
-def user(usr):
-  return f'<h1>{usr}</h1>'
+# @app.route('/<usr>')
+# def user(usr):
+#   return f'<h1>{usr}</h1>'
+
+@app.route('/CVpdf')
+def CVpdf():
+  return render_template('CVpdf.html')
 
 @app.route('/param.csv')
 def output_dataframe_csv():
